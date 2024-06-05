@@ -1,0 +1,136 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Personajes Rick y morty{% endblock %}
+
+{% block background %}{% load static %}{% static 'core/img/portfolio-bg.jpg' %}{% endblock %}
+
+{% block headers %}
+<h1>Rick and Morty</h1>
+<span class="subheading">Todos los personajes</span>
+{% endblock %}
+
+{% block content %}
+    <div id ='filters'>
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Alive</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">Dead</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">unknown</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit" id='search_name'>Search</button>
+                </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div id="personajes">
+
+    </div>
+    {% block js %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            //for from 1 to 10 to fetch data from an API
+            console.log("Entrando a document ready")
+            $("#personajes").empty();
+            for(var i=1; i<=10; i++){
+                console.log(i)
+                fetch(`https://rickandmortyapi.com/api/character/${i}`)
+                .then(response => response.json())
+                .then(data => {
+                        console.log(data);
+                        var html = `
+                        <div class="row project">  	
+                            <div class="col-lg-3 col-md-4 offset-lg-1">
+                                <img class="img-fluid" src="${data.image}" alt="">
+                            </div>
+                            <div class="col-lg-7 col-md-8">
+                                <h2 class="section-heading title">${data.name}</h2>   
+                                <p><span style='font-weight:700'>Status :</span> ${data.status}</p>
+                                <p><span style='font-weight:700'>Specie :</span> ${data.species}</p>
+                                <p><span style='font-weight:700'>Gender :</span> ${data.gender}</p>
+                                <p><span style='font-weight:700'>Gender :</span> ${data.cap}</p>
+                                <p><a href="${data.url}">Más información</a></p>
+                            </div>
+                        </div>
+                        `;
+                        $('#personajes').append(html);
+                }
+                );
+            }      
+        });
+        //how to get link clicked on a list item 
+        $('.nav-link').click(function(e){
+            e.preventDefault();
+            var link = $(this).text();
+            console.log(link);
+            fetch(`https://rickandmortyapi.com/api/character/?status=${link}`)
+                .then(response => response.json())
+                .then(data => {  
+                        $('#personajes').empty();
+                        //iterate through the results and append them to the page
+                        data.results.forEach(function(element){
+                        var html = `
+                        <div class="row project">  	
+                            <div class="col-lg-3 col-md-4 offset-lg-1">
+                                <img class="img-fluid" src="${element.image}" alt="">
+                            </div>
+                            <div class="col-lg-7 col-md-8">
+                                <h2 class="section-heading title">${element.name}</h2>   
+                                <p><span style='font-weight:700'>Status :</span> ${element.status}</p>
+                                <p><span style='font-weight:700'>Specie :</span> ${element.species}</p>
+                                <p><span style='font-weight:700'>Gender :</span> ${element.gender}</p>
+                                <p><a href="${element.url}">Más información</a></p>
+                            </div>
+                        </div>
+                        `;
+                        $('#personajes').append(html);
+                        })
+                }
+            );
+        });
+        $('#search_name').change(function(e){
+            var query = $(this).val();
+            console.log(query);
+            /*fetch(`https://rickandmortyapi.com/api/character/?name=${query}`)
+                .then(response => response.json())
+                .then(data => {  
+                        $('#personajes').empty();
+                        //iterate through the results and append them to the page
+                        data.results.forEach(function(element){
+                        var html = `
+                        <div class="row project">  	
+                            <div class="col-lg-3 col-md-4 offset-lg-1">
+                                <img class="img-fluid" src="${element.image}" alt="">
+                            </div>
+                            <div class="col-lg-7 col-md-8">
+                                <h2 class="section-heading title">${element.name}</h2>   
+                                <p><span style='font-weight:700'>Status :</span> ${element.status}</p>
+                                <p><span style='font-weight:700'>Specie :</span> ${element.species}</p>
+                                <p><span style='font-weight:700'>Gender :</span> ${element.gender}</p>
+                                <p><a href="${element.url}">Más información</a></p>
+                            </div>
+                        </div>
+                        `;
+                        $('#personajes').append(html);
+                    })
+                }
+            );*/
+        })
+
+        
+    </script>
+    {% endblock %}
+{% endblock %}
